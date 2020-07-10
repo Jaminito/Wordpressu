@@ -31,6 +31,7 @@ function formulariacion_Aspirante_init()
         nivel_css smallint(4) NOT NULL,
         nivel_js smallint(4) NOT NULL,
         aceptacion smallint(4) NOT NULL,
+        ip varchar(200) NOT NULL,
         created_at datetime NOT NULL,
         UNIQUE (id)
         ) $charset_collate;";
@@ -63,6 +64,7 @@ function formulariacion_Aspirante()
         $nivel_css = (int)$_POST['nivel_css'];
         $nivel_js = (int)$_POST['nivel_js'];
         $aceptacion = (int)$_POST['aceptacion'];
+        $ip = Kfp_Obtener_IP_usuario();
         $created_at = date('Y-m-d H:i:s');
         $wpdb->insert(
             $tabla_aspirantes,
@@ -73,6 +75,7 @@ function formulariacion_Aspirante()
                 'nivel_css' => $nivel_css,
                 'nivel_js' => $nivel_js,
                 'aceptacion' => $aceptacion,
+                'ip' => $ip,
                 'created_at' => $created_at,
             )
         );
@@ -139,5 +142,19 @@ value="1" required> Entiendo y acepto las condiciones
      
     // Devuelve el contenido del buffer de salida
     return ob_get_clean();
+}
+function Kfp_Obtener_IP_usuario()
+{
+    foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED',
+        'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED',
+        'REMOTE_ADDR') as $key) {
+        if (array_key_exists($key, $_SERVER) === true) {
+            foreach (array_map('trim', explode(',', $_SERVER[$key])) as $ip) {
+                if (filter_var($ip, FILTER_VALIDATE_IP) !== false) {
+                    return $ip;
+                }
+            }
+        }
+    }
 }
 ?>
