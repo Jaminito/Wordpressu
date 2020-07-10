@@ -7,7 +7,7 @@
  * Author URI: http://alturl.com/p749b
  */
 // Cuando el plugin se active se crea la tabla para recoger los datos si no existe
-register_activation_hook(__FILE__, 'Kfp_Aspirante_init');
+register_activation_hook(__FILE__, 'formulariacion_Aspirante_init');
  
 /**
  * Crea la tabla para recoger los datos del formulario
@@ -43,7 +43,40 @@ function formulariacion_Aspirante_init()
 add_shortcode('formulariacion_aspirante','formulariacion_Aspirante');
 
 function formulariacion_Aspirante() 
-{
+{   
+    global $wpdb; // Este objeto global permite acceder a la base de datos de WP
+    // Si viene del formulario  graba en la base de datos
+    // Cuidado con el último igual de la condición del if que es doble
+    if ($_POST['nombre'] != ''
+        AND is_email($_POST['correo'])
+        AND $_POST['nivel_html'] != ''
+        AND $_POST['nivel_css'] != ''
+        AND $_POST['nivel_js'] != ''      
+        AND $_POST['aceptacion'] == '1'
+    ) {
+        $tabla_aspirantes = $wpdb->prefix . 'aspirante'; 
+        $nombre = sanitize_text_field($_POST['nombre']);
+        $correo = $_POST['correo'];
+        $nivel_html = (int)$_POST['nivel_html'];
+        $nivel_css = (int)$_POST['nivel_css'];
+        $nivel_js = (int)$_POST['nivel_js'];
+        $aceptacion = (int)$_POST['aceptacion'];
+        $created_at = date('Y-m-d H:i:s');
+        $wpdb->insert(
+            $tabla_aspirantes,
+            array(
+                'nombre' => $nombre,
+                'correo' => $correo,
+                'nivel_html' => $nivel_html,
+                'nivel_css' => $nivel_css,
+                'nivel_js' => $nivel_js,
+                'aceptacion' => $aceptacion,
+                'created_at' => $created_at,
+            )
+        );
+        echo "<p class='exito'><b>Tus datos han sido registrados</b>. Gracias 
+            por tu interés. En breve contactaré contigo.<p>";
+    }
     // Esta función de PHP activa el almacenamiento en búfer de salida (output buffer)
     wp_enqueue_style('css_aspirante', plugins_url('style.css', __FILE__));
     // Cuando termine el formulario lo imprime con la función ob_get_clean
