@@ -143,6 +143,50 @@ value="1" required> Entiendo y acepto las condiciones
     // Devuelve el contenido del buffer de salida
     return ob_get_clean();
 }
+add_action("admin_menu", "Kfp_Aspirante_menu");
+
+/**
+ * Agrega el menú del plugin al formulario de WordPress
+ *
+ * @return void
+ */
+function Kfp_Aspirante_menu()
+{
+    add_menu_page("Formulario Aspirantes", "Aspirantes", "manage_options",
+        "kfp_aspirante_menu", "Kfp_Aspirante_admin", "dashicons-feedback", 75);
+}
+
+function Kfp_Aspirante_admin()
+{
+    global $wpdb;
+    $tabla_aspirantes = $wpdb->prefix . 'aspirante';
+    $aspirantes = $wpdb->get_results("SELECT * FROM $tabla_aspirantes");
+    echo '<div class="wrap"><h1>Lista de aspirantes</h1>';
+    echo '<table class="wp-list-table widefat fixed striped">';
+    echo '<thead><tr><th width="30%">Nombre</th><th width="20%">Correo</th>';
+    echo '<th>HTML</th><th>CSS</th><th>JS</th>';/**<th>PHP</th><th>WP</th>*/
+    echo '<th>Total</th>';
+    echo '</tr></thead>';
+    echo '<tbody id="the-list">';
+    foreach ($aspirantes as $aspirante) {
+        $nombre = esc_textarea($aspirante->nombre);
+        $correo = esc_textarea($aspirante->correo);
+        $motivacion = esc_textarea($aspirante->motivacion);
+        $nivel_html = (int) $aspirante->nivel_html;
+        $nivel_css = (int) $aspirante->nivel_css;
+        $nivel_js = (int) $aspirante->nivel_js;
+      /**   $nivel_php = (int) $aspirante->nivel_php;
+       * $nivel_wp = (int) $aspirante->nivel_wp; 
+        */
+        $total = $nivel_html + $nivel_css + $nivel_js /**+  $nivel_php + $nivel_wp*/;
+        echo "<tr><td><a href='#' title='$motivacion'>$nombre</a></td>";
+        echo "<td>$correo</td><td>$nivel_html</td><td>$nivel_css</td>";
+        echo "<td>$nivel_js</td>"/**"<td>$nivel_php</td><td>$nivel_wp</td>"*/;
+        echo "<td>$total</td></tr>";
+    }
+    echo '</tbody></table></div>';
+}
+
 function Kfp_Obtener_IP_usuario()
 {
     foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED',
