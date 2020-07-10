@@ -53,6 +53,8 @@ function formulariacion_Aspirante()
         AND $_POST['nivel_css'] != ''
         AND $_POST['nivel_js'] != ''      
         AND $_POST['aceptacion'] == '1'
+        AND wp_verify_nonce($_POST['aspirante_nonce'], 'graba_aspirante')
+
     ) {
         $tabla_aspirantes = $wpdb->prefix . 'aspirante'; 
         $nombre = sanitize_text_field($_POST['nombre']);
@@ -84,6 +86,7 @@ function formulariacion_Aspirante()
     ?>
     <form action="<?php get_the_permalink(); ?>" method="post" id="form_aspirante"
 class="cuestionario">
+<?php wp_nonce_field('graba_aspirante', 'aspirante_nonce'); ?>
         <div class="form-input">
             <label for="nombre">Nombre</label>
             <input type="text" name="nombre" id="nombre" required>
