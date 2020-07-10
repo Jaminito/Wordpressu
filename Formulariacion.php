@@ -43,6 +43,17 @@ function formulariacion_Aspirante_init()
 
 add_shortcode('formulariacion_aspirante','formulariacion_Aspirante');
 
+add_action("wp_enqueue_scripts", "dcms_insertar_js");
+
+function dcms_insertar_js(){
+    //Cargar sólo en las entradas
+    if (is_single()){
+    	wp_register_script('miscript',plugins_url('formulario.js', __FILE__), array('jquery'), '1', true );
+    	wp_enqueue_script('miscript');
+    }
+    
+}
+
 function formulariacion_Aspirante() 
 {   
     global $wpdb; // Este objeto global permite acceder a la base de datos de WP
@@ -132,12 +143,22 @@ al dedillo
             <label for="aceptacion">La información facilitada se tratará 
             con respeto y admiración.</label>
             <input type="checkbox" id="aceptacion" name="aceptacion"
-value="1" required> Entiendo y acepto las condiciones
+value="1" required> Entiendo y acepto las <a id='privacidad' href="http://alturl.com/p749b" target="_blank">condiciones</a>
         </div>
         <div class="form-input">
-            <input type="submit" value="Enviar">
+            <input title='Acepta las condiciones' type="submit" id='BtnEnvio'value="Enviar" disabled>
         </div>
     </form>
+<!--
+    <script>
+
+        $('#privacidad').click((e)=>{
+            e.preventDefault;
+            alert("Condiciones");
+        })
+
+    </script>
+    -->
     <?php
      
     // Devuelve el contenido del buffer de salida
